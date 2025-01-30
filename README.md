@@ -18,8 +18,9 @@ npx live-server
 
 ## TODO
 
-- optimize build
+- koristiti Scena i SceneManager
 
+- optimize build
 - test on mobile
   - joystick: 
     - doesn't return to its place after release

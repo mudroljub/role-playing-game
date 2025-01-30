@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="sr-RS">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Partisan Games ★</title>
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+
+<body>
+
+  <div id="ui"></div>
+  <div id="prozor"></div>
+  <canvas id="platno"></canvas>
+  <canvas id="platno-3d"></canvas>
+  <div class="overlay"></div>
+
+  <script type="importmap">
+    {
+        "imports": {
+            "three": "/libs/three/build/three.module.min.js",
+            "three/": "/libs/three/"
+        }
+    }
+  </script>
+  <script src="examples/main.js" type="module"></script>
+</body>
+
+</html>

@@ -1,4 +1,4 @@
-import DrvarScena from './80-scenes/drvar/DrvarScena.js'
+import DrvarScena from './drvar/DrvarScena.js'
 
 const scene = {
   DrvarScena,

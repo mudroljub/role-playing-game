@@ -18,7 +18,7 @@ npx live-server
 
 ## TODO
 
-- koristiti Scena i SceneManager
+- integrisati postojeće scene sa Scena3D i SceneManager
 
 - optimize build
 - test on mobile

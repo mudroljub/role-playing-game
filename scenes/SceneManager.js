@@ -1,6 +1,6 @@
 const putanje = {
   DrvarScena: './drvar/DrvarScena.js',
-  AerodromScena: './aerodrom/AerodromScena.js'
+  RajlovacScena: './rajlovac/RajlovacScena.js'
 }
 
 class SceneManager {

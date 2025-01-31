@@ -1,24 +1,32 @@
-import DrvarScena from './drvar/DrvarScena.js'
-import AerodromScena from './aerodrom/AerodromScena.js'
-
-const scene = {
-  DrvarScena,
-  AerodromScena,
+const putanje = {
+  DrvarScena: './drvar/DrvarScena.js',
+  AerodromScena: './aerodrom/AerodromScena.js'
 }
 
-export default class SceneManager {
+class SceneManager {
+  static instance = null
+
   constructor() {
-    if (SceneManager.instance) return SceneManager.instance
+    if (SceneManager.instance)
+      return SceneManager.instance
+
     this.currentScene = null
     SceneManager.instance = this
   }
 
-  start(key) {
+  async loadScene(key) {
+    const sceneModule = await import(putanje[key])
+    return sceneModule.default
+  }
+
+  async start(key) {
     if (this.currentScene)
       this.currentScene.end()
 
-    const novaScena = new scene[key](this)
-    this.currentScene = novaScena
+    const SceneClass = await this.loadScene(key)
+    this.currentScene = new SceneClass(this)
     this.currentScene.start()
   }
 }
+
+export default SceneManager

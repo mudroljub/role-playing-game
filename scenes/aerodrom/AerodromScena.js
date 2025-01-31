@@ -16,7 +16,6 @@ import { TankAI } from '/core/actor/derived/Tank.js'
 const mapSize = 200
 const dornierNum = 8, stukaNum = 8, heinkelNum = 7
 
-// TODO: popraviti komande, ukloniti orbit
 export default class AerodromScena extends Scena3D {
   async init() {
     this.bojaPozadine = 0x440033

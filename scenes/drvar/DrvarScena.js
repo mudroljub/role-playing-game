@@ -4,6 +4,7 @@ import { createGround } from '/core/ground.js'
 import { elements } from './data.js'
 import { randSpread, praviPanoramu } from './utils.js'
 import Sprite from './Sprite.js'
+import {createOrbitControls} from '../utils.js'
 
 const textureLoader = new THREE.TextureLoader()
 
@@ -16,6 +17,7 @@ export default class DrvarScena extends Scena3D {
         this.dodajSprite(el, i)
     })
     this.scene.add(praviPanoramu())
+    this.controls = createOrbitControls(this.camera, this.renderer.domElement)
     this.controls.enablePan = false
     this.controls.minAzimuthAngle = -Math.PI / 8
     this.controls.maxAzimuthAngle = Math.PI / 8

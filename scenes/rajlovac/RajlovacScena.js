@@ -12,6 +12,9 @@ import JunkersStuka from '/core/objects/JunkersStuka.js'
 import HeinkelBomber from '/core/objects/HeinkelBomber.js'
 import Tower from '/core/objects/Tower.js'
 import { TankAI } from '/core/actor/derived/Tank.js'
+import { GermanMachineGunnerAI } from '/core/actor/derived/ww2/GermanMachineGunner.js'
+import { SSSoldierAI } from '/core/actor/derived/ww2/SSSoldier.js'
+import { NaziOfficerAI } from '/core/actor/derived/ww2/NaziOfficer.js'
 
 const mapSize = 200
 const dornierNum = 8, stukaNum = 8, heinkelNum = 7
@@ -33,30 +36,29 @@ export default class RajlovacScena extends Scena3D {
     this.player.lookAt(this.scene.position)
     this.scene.add(this.player.mesh)
 
-    this.gui = new GUI({ subtitle: 'Aircraft left', total: dornierNum + stukaNum + heinkelNum, scoreClass: '', controls: fpsControls, controlsWindowClass: 'white-window' })
-
-    this.gui.showGameScreen({ callback: () => this.start(), usePointerLock: true, subtitle: 'Shoot: MOUSE<br>Move: WASD or ARROWS<br>Run: CAPSLOCK' })
-
-    new Report({ container: this.gui.gameScreen, text: 'The German planes that sow death among our combatants are stationed at the Rajlovac Airport near Sarajevo.\n\nEnter the airport and destroy all enemy aircraft.' })
+    this.setupGUI()
 
     for (let i = 0; i < dornierNum; i++) { // front
-      const plane = new DornierBomber({ pos: [-50 + i * 15, 0, -75] })
-      this.addEnemy(plane, this.aircraft)
+      const plane = new DornierBomber({ pos: [-50 + i * 15, 0, -75], name: 'enemy' })
+      this.aircraft.push(plane)
     }
 
     for (let i = 0; i < stukaNum; i++) { // left
-      const plane = new JunkersStuka({ pos: [-55, 0, -55 + i * 12] })
-      this.addEnemy(plane, this.aircraft)
+      const plane = new JunkersStuka({ pos: [-55, 0, -55 + i * 12], name: 'enemy' })
+      this.aircraft.push(plane)
     }
 
     for (let i = 0; i < heinkelNum; i++) { // back
-      const plane = new HeinkelBomber({ pos: [-50 + i * 18, 0, 50] })
-      this.addEnemy(plane, this.aircraft)
+      const plane = new HeinkelBomber({ pos: [-50 + i * 18, 0, 50], name: 'enemy' })
+      this.aircraft.push(plane)
     }
 
+    this.aircraft.forEach(plane => this.dodaj(plane.mesh))
+
     ;[[-75, -75], [-75, 75], [75, -75], [75, 75]].forEach(async([x, z]) => {
-      const tower = new Tower({ pos: [x, 0, z], range: 50, interval: 1500, damage: 10, damageDistance: 1 })
-      this.addEnemy(tower, this.enemies)
+      const tower = new Tower({ pos: [x, 0, z], range: 50, interval: 1500, damage: 10, damageDistance: 1, name: 'enemy' })
+      this.enemies.push(tower)
+      this.scene.add(tower.mesh)
     })
 
     const airport = createAirport()
@@ -73,25 +75,27 @@ export default class RajlovacScena extends Scena3D {
     this.solids.push(airport, airport2, bunker)
     this.player.addSolids(this.solids)
 
-    const soldiers = ['GermanMachineGunner', 'SSSoldier', 'NaziOfficer']
+    const soldiers = [GermanMachineGunnerAI, SSSoldierAI, NaziOfficerAI]
     for (let i = 0; i < 10; i++) {
-      const name = sample(soldiers)
-      const obj = await import(`/core/actor/derived/ww2/${name}.js`)
-      const RandomClass = obj[name + 'AI']
+      const RandomClass = sample(soldiers)
       const soldier = new RandomClass({ pos: coords.pop(), target: this.player.mesh, mapSize })
-      this.addEnemy(soldier, this.enemies)
+      this.enemies.push(soldier)
+      this.scene.add(soldier.mesh)
       soldier.addSolids(this.solids)
     }
 
-    const tank = new TankAI({ mapSize })
-    this.addEnemy(tank, this.enemies)
+    const tank = new TankAI({ mapSize, name: 'enemy' })
+    this.enemies.push(tank)
+    this.scene.add(tank.mesh)
     tank.addSolids(this.solids)
   }
 
-  addEnemy(obj, arr) {
-    arr.push(obj)
-    obj.name = 'enemy'
-    this.scene.add(obj.mesh)
+  setupGUI() {
+    this.gui = new GUI({ subtitle: 'Aircraft left', total: dornierNum + stukaNum + heinkelNum, scoreClass: '', controls: fpsControls, controlsWindowClass: 'white-window' })
+
+    this.gui.showGameScreen({ callback: () => this.start(), usePointerLock: true, subtitle: 'Shoot: MOUSE<br>Move: WASD or ARROWS<br>Run: CAPSLOCK' })
+
+    new Report({ container: this.gui.gameScreen, text: 'The German planes that sow death among our combatants are stationed at the Rajlovac Airport near Sarajevo.\n\nEnter the airport and destroy all enemy aircraft.' })
   }
 
   update(dt) {

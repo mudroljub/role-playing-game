@@ -18,8 +18,10 @@ npx live-server
 
 ## TODO
 
-- integrisati postojeće scene sa Scena3D i SceneManager
-
+- integrisati lavirint sa Scena3D
+- integrisati GUI
+- name da bude tags?
+ 
 - optimize build
 - test on mobile
   - joystick: 

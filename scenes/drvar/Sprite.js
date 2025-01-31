@@ -10,7 +10,7 @@ export default class Sprite {
     const skalar = .25
     this.texture = new THREE.TextureLoader().load(imgSrc, texture => {
       const frameWidth = texture.image.width / frameCount
-      this.object.scale.set(frameWidth * skalar, texture.image.height * skalar, 1)
+      this.mesh.scale.set(frameWidth * skalar, texture.image.height * skalar, 1)
       this.randPosition()
     })
     this.texture.wrapS = THREE.RepeatWrapping
@@ -18,14 +18,14 @@ export default class Sprite {
     this.texture.repeat.set(1 / frameCount, 1)
 
     this.material = new THREE.SpriteMaterial({ map: this.texture })
-    this.object = new THREE.Sprite(this.material)
+    this.mesh = new THREE.Sprite(this.material)
   }
 
   randPosition() {
     const range = 50
     const x = randSpread(range)
     const z = randSpread(range)
-    this.object.position.set(x, this.object.scale.y * .25, z)
+    this.mesh.position.set(x, this.mesh.scale.y * .25, z)
   }
 
   update(dt) {

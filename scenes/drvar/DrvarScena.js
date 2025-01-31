@@ -24,7 +24,7 @@ export default class DrvarScena extends Scena3D {
     this.vozila = []
     this.partizani = []
     this.animator = new Sprite('assets/slike/sprajtovi/efekti/eksplozija-01.png', 8, 4)
-    this.scene.add(this.animator.object)
+    this.scene.add(this.animator.mesh)
   }
 
   dodajSprite(el, i) {
@@ -34,20 +34,20 @@ export default class DrvarScena extends Scena3D {
       texture.magFilter = THREE.NearestFilter // glatko blizu
 
       const material = new THREE.SpriteMaterial({ map: texture })
-      const object = new THREE.Sprite(material)
+      const mesh = new THREE.Sprite(material)
 
       const skalar = .05
-      object.scale.set(texture.image.width * skalar, texture.image.height * skalar, 1)
+      mesh.scale.set(texture.image.width * skalar, texture.image.height * skalar, 1)
 
       const origin = el.origin ?? { x: 0, y: 0, z: 0 }
       const range = el.range ?? { x: 100, y: 0, z: 100 }
       const x = origin.x + randSpread(range.x)
       const y = origin.y + randSpread(range.y)
       const z = origin.z + randSpread(range.z)
-      object.position.set(x, y + texture.image.height * skalar * .5, z)
-      this.dodaj(object)
+      mesh.position.set(x, y + texture.image.height * skalar * .5, z)
+      this.dodaj(mesh)
 
-      if (el.type) this[el.type].push(object)
+      if (el.type) this[el.type].push(mesh)
     })
   }
 

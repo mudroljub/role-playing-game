@@ -5,7 +5,7 @@ export default class Scena2D {
   constructor(manager) {
     this.manager = manager
     this.predmeti = []
-    this.gameLoop = new GameLoop(this.loop)
+    this.gameLoop = new GameLoop(this.loop, false)
     this.handleClick = this.handleClick.bind(this)
     this.elementUI = document.getElementById('ui')
     this.prozorElement = document.getElementById('prozor')

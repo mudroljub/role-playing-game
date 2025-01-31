@@ -1,5 +1,23 @@
 {
+  "name": "create-3d-worlds",
+  "version": "1.0.0",
+  "description": "A library of reusable Three.js components that you can play with.",
+  "author": "mudroljub",
+  "license": "MIT",
   "dependencies": {
     "three": "^0.160.0"
-  }
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.17.0",
+    "eslint": "^9.17.0",
+    "globals": "^15.14.0"
+  },
+  "scripts": {
+    "start": "npx live-server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/create-3d-worlds/create-3d-worlds.github.io.git"
+  },
+  "homepage": "https://github.com/create-3d-worlds/create-3d-worlds.github.io#readme"
 }

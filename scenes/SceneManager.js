@@ -1,7 +1,9 @@
 import DrvarScena from './drvar/DrvarScena.js'
+import AerodromScena from './aerodrom/AerodromScena.js'
 
 const scene = {
   DrvarScena,
+  AerodromScena,
 }
 
 export default class SceneManager {

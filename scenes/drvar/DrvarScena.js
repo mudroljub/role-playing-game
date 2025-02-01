@@ -4,19 +4,19 @@ import { createGround } from '/core/ground.js'
 import { elements } from './data.js'
 import { randSpread, praviPanoramu } from './utils.js'
 import Sprite from './Sprite.js'
-import {createOrbitControls} from '../utils.js'
+import { createOrbitControls } from '../utils.js'
 
 const textureLoader = new THREE.TextureLoader()
 
 export default class DrvarScena extends Scena3D {
   init() {
     this.bojaPozadine = 0x440033
-    this.dodaj(createGround())
+    this.dodajMesh(createGround())
     elements.forEach(el => {
       for (let i = 0; i < el.number; ++i)
         this.dodajSprite(el, i)
     })
-    this.dodaj(praviPanoramu())
+    this.dodajMesh(praviPanoramu())
     this.controls = createOrbitControls(this.camera, this.renderer.domElement)
     this.controls.enablePan = false
     this.controls.minAzimuthAngle = -Math.PI / 8
@@ -25,8 +25,8 @@ export default class DrvarScena extends Scena3D {
     this.padobranci = []
     this.vozila = []
     this.partizani = []
-    this.animator = new Sprite('assets/slike/sprajtovi/efekti/eksplozija-01.png', 8, 4)
-    this.dodaj(this.animator.mesh)
+    this.eksplozija = new Sprite('assets/slike/sprajtovi/efekti/eksplozija-01.png', 8, 4)
+    this.dodajMesh(this.eksplozija.mesh)
   }
 
   dodajSprite(el, i) {
@@ -47,7 +47,7 @@ export default class DrvarScena extends Scena3D {
       const y = origin.y + randSpread(range.y)
       const z = origin.z + randSpread(range.z)
       mesh.position.set(x, y + texture.image.height * skalar * .5, z)
-      this.dodaj(mesh)
+      this.dodajMesh(mesh)
 
       if (el.type) this[el.type].push(mesh)
     })

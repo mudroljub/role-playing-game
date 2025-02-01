@@ -16,7 +16,7 @@ export default class Scena3D extends Scena {
     this.scene.background = new THREE.Color(boja)
   }
 
-  dodaj(...predmeti) {
+  dodajMesh(...predmeti) {
     this.scene.add(...predmeti)
   }
 

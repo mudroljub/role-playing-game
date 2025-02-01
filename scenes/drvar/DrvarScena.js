@@ -16,7 +16,7 @@ export default class DrvarScena extends Scena3D {
       for (let i = 0; i < el.number; ++i)
         this.dodajSprite(el, i)
     })
-    this.scene.add(praviPanoramu())
+    this.dodaj(praviPanoramu())
     this.controls = createOrbitControls(this.camera, this.renderer.domElement)
     this.controls.enablePan = false
     this.controls.minAzimuthAngle = -Math.PI / 8
@@ -26,7 +26,7 @@ export default class DrvarScena extends Scena3D {
     this.vozila = []
     this.partizani = []
     this.animator = new Sprite('assets/slike/sprajtovi/efekti/eksplozija-01.png', 8, 4)
-    this.scene.add(this.animator.mesh)
+    this.dodaj(this.animator.mesh)
   }
 
   dodajSprite(el, i) {

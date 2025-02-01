@@ -23,11 +23,11 @@ export default class RajlovacScena extends Scena3D {
   async init() {
     this.setupGUI()
     this.bojaPozadine = 0x440033
-    this.dodaj(createSun())
     const ground = createGround({ file: 'terrain/ground.jpg' })
     ground.position.y -= .1
     this.dodaj(ground)
     this.dodaj(createFloor({ size: mapSize, file: 'terrain/asphalt.jpg' }))
+    this.dodaj(createSun())
     this.aircraft = []
     this.enemies = []
     this.solids = []
@@ -52,12 +52,9 @@ export default class RajlovacScena extends Scena3D {
       this.aircraft.push(plane)
     }
 
-    this.aircraft.forEach(plane => this.dodaj(plane.mesh))
-
     ;[[-75, -75], [-75, 75], [75, -75], [75, 75]].forEach(async([x, z]) => {
       const tower = new Tower({ pos: [x, 0, z], range: 50, interval: 1500, damage: 10, damageDistance: 1, name: 'enemy' })
       this.enemies.push(tower)
-      this.dodaj(tower.mesh)
     })
 
     const airport = createAirport()
@@ -79,14 +76,14 @@ export default class RajlovacScena extends Scena3D {
       const RandomClass = sample(soldiers)
       const soldier = new RandomClass({ pos: coords.pop(), target: this.player.mesh, mapSize })
       this.enemies.push(soldier)
-      this.dodaj(soldier.mesh)
       soldier.addSolids(this.solids)
     }
 
     const tank = new TankAI({ mapSize, name: 'enemy' })
     this.enemies.push(tank)
-    this.dodaj(tank.mesh)
     tank.addSolids(this.solids)
+
+    ;[...this.aircraft, ...this.enemies].forEach(plane => this.dodaj(plane.mesh))
   }
 
   setupGUI() {
@@ -107,7 +104,6 @@ export default class RajlovacScena extends Scena3D {
     if (destroyed.length == this.aircraft.length)
       this.gui.renderText('Congratulations!<br>All enemy planes were destroyed.')
 
-    // TODO: da hendla Scena
     this.player.update(dt)
     this.enemies.forEach(obj => obj.update(dt))
     this.aircraft.forEach(obj => obj.update(dt))

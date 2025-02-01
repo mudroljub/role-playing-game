@@ -18,6 +18,8 @@ npx live-server
 
 ## TODO
 
+- Scena da hendla gameObject.update(dt)
+  - dodaj da prima (predmet) - gura u predmeti[] za update i scene.add(predmet.mesh) za render
 - integrisati lavirint sa Scena3D
 - integrisati GUI
 - name da bude tags?

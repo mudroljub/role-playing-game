@@ -27,7 +27,6 @@ export default class RajlovacScena extends Scena3D {
     ground.position.y -= .1
     const floor = createFloor({ size: mapSize, file: 'terrain/asphalt.jpg' })
     const sun = createSun()
-    this.aircraft = []
     this.enemies = []
     this.solids = []
 
@@ -35,20 +34,11 @@ export default class RajlovacScena extends Scena3D {
     this.player = new FPSPlayer({ camera: this.camera, pos: [100, 0, 0] })
     this.player.lookAt(this.scene.position)
 
-    for (let i = 0; i < dornierNum; i++) { // front
-      const plane = new DornierBomber({ pos: [-50 + i * 15, 0, -75], name: 'enemy' })
-      this.aircraft.push(plane)
-    }
-
-    for (let i = 0; i < stukaNum; i++) { // left
-      const plane = new JunkersStuka({ pos: [-55, 0, -55 + i * 12], name: 'enemy' })
-      this.aircraft.push(plane)
-    }
-
-    for (let i = 0; i < heinkelNum; i++) { // back
-      const plane = new HeinkelBomber({ pos: [-50 + i * 18, 0, 50], name: 'enemy' })
-      this.aircraft.push(plane)
-    }
+    this.aircraft = [
+      ...Array.from({ length: dornierNum }, (_, i) => new DornierBomber({ pos: [-50 + i * 15, 0, -75], name: 'enemy' })),
+      ...Array.from({ length: stukaNum }, (_, i) => new JunkersStuka({ pos: [-55, 0, -55 + i * 12], name: 'enemy' })),
+      ...Array.from({ length: heinkelNum }, (_, i) => new HeinkelBomber({ pos: [-50 + i * 18, 0, 50], name: 'enemy' })),
+    ]
 
     ;[[-75, -75], [-75, 75], [75, -75], [75, 75]].forEach(async([x, z]) => {
       const tower = new Tower({ pos: [x, 0, z], range: 50, interval: 1500, damage: 10, damageDistance: 1, name: 'enemy' })

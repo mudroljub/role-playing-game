@@ -63,3 +63,9 @@ export default class Tower extends Building {
     })
   }
 }
+
+export class AirportTower extends Tower {
+  constructor(x, z) {
+    super({ pos: [x, 0, z], range: 50, interval: 1500, damage: 10, damageDistance: 1, name: 'enemy' })
+  }
+}

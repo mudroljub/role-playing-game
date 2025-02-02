@@ -10,7 +10,7 @@ const mesh = await loadModel({
 
 export default class HeinkelBomber extends Building {
   constructor(params = {}) {
-    super({ mesh, randomSmoke: true, ...params })
+    super({ mesh, randomSmoke: true, name: 'enemy', ...params })
     this.position.y += this.height * .27
   }
 }

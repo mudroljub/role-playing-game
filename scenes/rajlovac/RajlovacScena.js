@@ -10,7 +10,7 @@ import Report from '/core/io/Report.js'
 import DornierBomber from '/core/objects/DornierBomber.js'
 import JunkersStuka from '/core/objects/JunkersStuka.js'
 import HeinkelBomber from '/core/objects/HeinkelBomber.js'
-import Tower from '/core/objects/Tower.js'
+import { AirportTower } from '/core/objects/Tower.js'
 import { TankAI } from '/core/actor/derived/Tank.js'
 import { GermanMachineGunnerAI } from '/core/actor/derived/ww2/GermanMachineGunner.js'
 import { SSSoldierAI } from '/core/actor/derived/ww2/SSSoldier.js'
@@ -33,14 +33,13 @@ export default class RajlovacScena extends Scena3D {
     this.player.lookAt(this.scene.position)
 
     this.aircraft = [
-      ...Array.from({ length: dornierNum }, (_, i) => new DornierBomber({ pos: [-50 + i * 15, 0, -75], name: 'enemy' })),
-      ...Array.from({ length: stukaNum }, (_, i) => new JunkersStuka({ pos: [-55, 0, -55 + i * 12], name: 'enemy' })),
-      ...Array.from({ length: heinkelNum }, (_, i) => new HeinkelBomber({ pos: [-50 + i * 18, 0, 50], name: 'enemy' })),
+      ...Array.from({ length: dornierNum }, (_, i) => new DornierBomber({ pos: [-50 + i * 15, 0, -75] })),
+      ...Array.from({ length: stukaNum }, (_, i) => new JunkersStuka({ pos: [-55, 0, -55 + i * 12] })),
+      ...Array.from({ length: heinkelNum }, (_, i) => new HeinkelBomber({ pos: [-50 + i * 18, 0, 50] })),
     ]
 
-    ;[[-75, -75], [-75, 75], [75, -75], [75, 75]].forEach(async([x, z]) => {
-      const tower = new Tower({ pos: [x, 0, z], range: 50, interval: 1500, damage: 10, damageDistance: 1, name: 'enemy' })
-      this.dodaj(tower)
+    ;[[-75, -75], [-75, 75], [75, -75], [75, 75]].forEach(([x, z]) => {
+      this.dodaj(new AirportTower(x, z))
     })
 
     const airport = createAirport()

@@ -16,11 +16,16 @@ export default class Scena3D extends Scena {
     this.scene.background = new THREE.Color(boja)
   }
 
+  dodaj(...predmeti) {
+    this.predmeti.push(...predmeti)
+    this.scene.add(...predmeti.map(arg => arg.mesh))
+  }
+
   dodajMesh(...predmeti) {
     this.scene.add(...predmeti)
   }
 
-  update(dt) {
+  proveriTipke(dt) {
     this.controls?.update(dt)
   }
 

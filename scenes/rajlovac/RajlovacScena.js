@@ -83,7 +83,7 @@ export default class RajlovacScena extends Scena3D {
     this.enemies.push(tank)
     tank.addSolids(this.solids)
 
-    ;[...this.aircraft, ...this.enemies].forEach(plane => this.dodajMesh(plane.mesh))
+    ;[...this.aircraft, ...this.enemies].forEach(predmet => this.dodaj(predmet))
   }
 
   setupGUI() {
@@ -105,7 +105,5 @@ export default class RajlovacScena extends Scena3D {
       this.gui.renderText('Congratulations!<br>All enemy planes were destroyed.')
 
     this.player.update(dt)
-    this.enemies.forEach(obj => obj.update(dt))
-    this.aircraft.forEach(obj => obj.update(dt))
   }
 }

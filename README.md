@@ -19,7 +19,10 @@ npx live-server
 ## TODO
 
 - integrisati lavirint sa Scena3D
+  - BUG: ne radi ubijanje
+- srediti kuckanje pre početka
 - integrisati GUI
+- koristiti Spinner u upravniku scena
 - name da bude tags?
  
 - optimize build

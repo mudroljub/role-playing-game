@@ -2,15 +2,16 @@ import { keyboard } from './io/Keyboard.js'
 import GameLoop from './GameLoop.js'
 
 export default class Scena2D {
-  constructor(manager) {
+  constructor(manager, { autostart = false, usePointerLock = false } = {}) {
     this.manager = manager
     this.predmeti = []
-    this.gameLoop = new GameLoop(this.loop, false)
+    this.gameLoop = new GameLoop(this.loop, autostart, usePointerLock)
     this.handleClick = this.handleClick.bind(this)
     this.elementUI = document.getElementById('ui')
     this.prozorElement = document.getElementById('prozor')
     this.upamcenUI = this.upamcenProzor = this.zavrsniTekst = ''
     this.hocuVan = false
+    document.addEventListener('click', this.handleClick)
   }
 
   init() {}
@@ -100,7 +101,6 @@ export default class Scena2D {
 
   start() {
     this.gameLoop.start()
-    document.addEventListener('click', this.handleClick)
   }
 
   end() {

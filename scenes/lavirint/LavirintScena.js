@@ -1,92 +1,89 @@
 import Scena3D from '/core/Scena3D.js'
-import { createGround, createFloor } from '/core/ground.js'
-import { createMoon } from '/core/light.js'
-import { sample, getEmptyCoords } from '/core/helpers.js'
+import { createToonRenderer } from '/core/scene.js'
+import { createGround } from '/core/ground.js'
+import { sample } from '/core/helpers.js'
+import { hemLight, lightningStrike } from '/core/light.js'
 import FPSPlayer from '/core/actor/FPSPlayer.js'
-import GUI, { fpsControls } from '/core/io/GUI.js'
-import { createAirport } from '/core/city.js'
-import { loadModel } from '/core/loaders.js'
+import Maze from '/core/mazes/Maze.js'
+import { truePrims } from '/core/mazes/algorithms.js'
 import Report from '/core/io/Report.js'
-import DornierBomber from '/core/objects/DornierBomber.js'
-import JunkersStuka from '/core/objects/JunkersStuka.js'
-import HeinkelBomber from '/core/objects/HeinkelBomber.js'
-import { AirportTower } from '/core/objects/Tower.js'
-import { TankAI } from '/core/actor/derived/Tank.js'
+import GUI, { fpsControls } from '/core/io/GUI.js'
 import { GermanMachineGunnerAI } from '/core/actor/derived/ww2/GermanMachineGunner.js'
 import { SSSoldierAI } from '/core/actor/derived/ww2/SSSoldier.js'
 import { NaziOfficerAI } from '/core/actor/derived/ww2/NaziOfficer.js'
-
-const mapSize = 200
-const dornierNum = 8, stukaNum = 8, heinkelNum = 7
+import { GermanFlameThrowerAI } from '/core/actor/derived/ww2/GermanFlameThrower.js'
+import FirstAid from '/core/objects/FirstAid.js'
 
 export default class LavirintScena extends Scena3D {
+  constructor(manager) {
+    super(manager, { autostart: false, usePointerLock: true })
+  }
+
   async init() {
+    this.enemies = []
+
+    this.renderer = await createToonRenderer()
+
+    this.light = hemLight({ intensity: Math.PI * 1.5 })
+    this.bojaPozadine = 0x070b34
+    this.dodajMesh(createGround({ file: 'terrain/ground.jpg' }))
+
+    const maze = this.maze = new Maze(8, 8, truePrims, 5)
+    const coords = maze.getEmptyCoords(true)
+    const walls = maze.toTiledMesh({ texture: 'terrain/concrete.jpg' })
+    this.dodajMesh(walls)
+
+    const player = this.player = new FPSPlayer({ camera: this.camera, solids: walls })
+    player.putInMaze(maze)
+    this.dodajMesh(player.mesh)
+
+    // this.renderer.render(scene, camera) // first draw
     this.setupGUI()
-    this.bojaPozadine = 0x440033
-    const ground = createGround({ file: 'terrain/ground.jpg' })
-    ground.position.y -= .1
-    const floor = createFloor({ size: mapSize, file: 'terrain/asphalt.jpg' })
-    this.solids = []
 
-    const coords = getEmptyCoords({ mapSize: mapSize * .5 })
-    this.player = new FPSPlayer({ camera: this.camera, pos: [100, 0, 0] })
-    this.player.lookAt(this.scene.position)
-
-    this.aircraft = [
-      ...Array.from({ length: dornierNum }, (_, i) => new DornierBomber({ pos: [-50 + i * 15, 0, -75] })),
-      ...Array.from({ length: stukaNum }, (_, i) => new JunkersStuka({ pos: [-55, 0, -55 + i * 12] })),
-      ...Array.from({ length: heinkelNum }, (_, i) => new HeinkelBomber({ pos: [-50 + i * 18, 0, 50] })),
-    ]
-
-    ;[[-75, -75], [-75, 75], [75, -75], [75, 75]].forEach(([x, z]) => {
-      this.dodaj(new AirportTower(x, z))
-    })
-
-    const airport = createAirport()
-    airport.translateX(75)
-    airport.rotateY(Math.PI * .5)
-
-    const airport2 = airport.clone()
-    airport2.translateX(25)
-
-    const bunker = await loadModel({ file: 'building/bunker.fbx', size: 3, texture: 'terrain/concrete.jpg' })
-    bunker.position.set(75, 0, 25)
-
-    this.solids.push(airport, airport2, bunker)
-    this.player.addSolids(this.solids)
-
-    const soldiers = [GermanMachineGunnerAI, SSSoldierAI, NaziOfficerAI]
+    const soldiers = [GermanMachineGunnerAI, SSSoldierAI, NaziOfficerAI, GermanFlameThrowerAI]
     for (let i = 0; i < 10; i++) {
-      const RandomClass = sample(soldiers)
-      const soldier = new RandomClass({ pos: coords.pop(), target: this.player.mesh, mapSize })
-      soldier.addSolids(this.solids)
-      this.dodaj(soldier)
+      const EnemyClass = sample(soldiers)
+      const enemy = new EnemyClass({ pos: coords.pop(), target: player.mesh, solids: walls })
+      this.enemies.push(enemy)
+      this.dodajMesh(enemy.mesh)
     }
 
-    const tank = new TankAI({ mapSize })
-    tank.addSolids(this.solids)
-    this.dodaj(tank)
+    for (let i = 0; i < 2; i++) {
+      const firstAid = new FirstAid({ pos: coords.pop() })
+      this.dodajMesh(firstAid.mesh)
+    }
 
-    this.dodajMesh(ground, floor, createMoon(), airport, airport2, bunker)
-    this.dodaj(...this.aircraft, this.player)
   }
 
   setupGUI() {
-    this.gui = new GUI({ subtitle: 'Aircraft left', total: dornierNum + stukaNum + heinkelNum, scoreClass: '', controls: fpsControls, controlsWindowClass: 'white-window' })
+    this.gui = new GUI({ subtitle: 'Enemy left', total: this.enemies.length, controls: fpsControls, scoreClass: '', controlsWindowClass: 'white-window' })
 
-    this.gui.showGameScreen({ callback: () => this.start(), usePointerLock: true, subtitle: 'Shoot: MOUSE<br>Move: WASD or ARROWS<br>Run: CAPSLOCK' })
+    this.gui.showGameScreen({
+      goals: ['Find the way out', 'Bonus: Kill all enemies'],
+      subtitle: 'Shoot: MOUSE<br> Move: WASD or ARROWS<br> Run: CAPSLOCK',
+      usePointerLock: true,
+    })
 
-    new Report({ container: this.gui.gameScreen, text: 'The German planes that sow death among our combatants are stationed at the Rajlovac Airport near Sarajevo.\n\nEnter the airport and destroy all enemy aircraft.' })
+    new Report({ container: this.gui.gameScreen, text: 'After a successful sabotage mission you stayed behind enemy lines.\n\nFind the way out of the enemy base.' })
   }
 
-  update(dt) {
-    super.update(dt)
-    if (!document.pointerLockElement) return
+  update(dt, t) {
+    super.update(dt, t)
 
-    const destroyed = this.aircraft.filter(plane => plane.energy <= 0)
-    this.gui.update({ points: destroyed.length, left: this.aircraft.length - destroyed.length, dead: this.player.dead })
+    const killed = this.enemies.filter(enemy => enemy.energy <= 0)
+    const left = this.enemies.length - killed.length
+    const won = this.player.position.distanceTo(this.maze.exitPosition) < 5
 
-    if (destroyed.length == this.aircraft.length)
-      this.gui.renderText('Congratulations!<br>All enemy planes were destroyed.')
+    this.player.update(dt)
+
+    if (won)
+      this.gui.renderText(`Bravo!<br>You found a way out<br> and kill ${killed.length} of ${this.enemies.length} enemies`)
+
+    const blinkingMessage = won ? '' : 'Find a way out!'
+    this.gui.update({ time: t, points: killed.length, left, dead: this.player.dead, blinkingMessage })
+
+    this.enemies.forEach(enemy => enemy.update(dt))
+
+    if (Math.random() > .998) lightningStrike(this.light)
   }
 }

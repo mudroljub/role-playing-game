@@ -26,7 +26,7 @@ class SceneManager {
 
     const SceneClass = await this.loadScene(key)
     this.currentScene = new SceneClass(this)
-    this.currentScene.start()
+    // this.currentScene.start()
   }
 }
 

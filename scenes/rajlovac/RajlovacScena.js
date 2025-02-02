@@ -20,6 +20,10 @@ const mapSize = 200
 const dornierNum = 8, stukaNum = 8, heinkelNum = 7
 
 export default class RajlovacScena extends Scena3D {
+  constructor(manager) {
+    super(manager, { autostart: true, usePointerLock: true })
+  }
+
   async init() {
     this.setupGUI()
     this.bojaPozadine = 0x440033

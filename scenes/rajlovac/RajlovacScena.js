@@ -25,9 +25,8 @@ export default class RajlovacScena extends Scena3D {
     this.bojaPozadine = 0x440033
     const ground = createGround({ file: 'terrain/ground.jpg' })
     ground.position.y -= .1
-    this.dodajMesh(ground)
-    this.dodajMesh(createFloor({ size: mapSize, file: 'terrain/asphalt.jpg' }))
-    this.dodajMesh(createSun())
+    const floor = createFloor({ size: mapSize, file: 'terrain/asphalt.jpg' })
+    const sun = createSun()
     this.aircraft = []
     this.enemies = []
     this.solids = []
@@ -35,7 +34,6 @@ export default class RajlovacScena extends Scena3D {
     const coords = getEmptyCoords({ mapSize: mapSize * .5 })
     this.player = new FPSPlayer({ camera: this.camera, pos: [100, 0, 0] })
     this.player.lookAt(this.scene.position)
-    this.dodajMesh(this.player.mesh)
 
     for (let i = 0; i < dornierNum; i++) { // front
       const plane = new DornierBomber({ pos: [-50 + i * 15, 0, -75], name: 'enemy' })
@@ -67,7 +65,6 @@ export default class RajlovacScena extends Scena3D {
     const bunker = await loadModel({ file: 'building/bunker.fbx', size: 3, texture: 'terrain/concrete.jpg' })
     bunker.position.set(75, 0, 25)
 
-    this.dodajMesh(airport, airport2, bunker)
     this.solids.push(airport, airport2, bunker)
     this.player.addSolids(this.solids)
 
@@ -83,7 +80,8 @@ export default class RajlovacScena extends Scena3D {
     this.enemies.push(tank)
     tank.addSolids(this.solids)
 
-    ;[...this.aircraft, ...this.enemies].forEach(predmet => this.dodaj(predmet))
+    this.dodajMesh(ground, floor, sun, airport, airport2, bunker)
+    this.dodaj(...this.aircraft, ...this.enemies, this.player)
   }
 
   setupGUI() {
@@ -103,7 +101,5 @@ export default class RajlovacScena extends Scena3D {
 
     if (destroyed.length == this.aircraft.length)
       this.gui.renderText('Congratulations!<br>All enemy planes were destroyed.')
-
-    this.player.update(dt)
   }
 }

@@ -1,7 +1,7 @@
 import { keyboard } from './io/Keyboard.js'
 import GameLoop from './GameLoop.js'
 
-export default class Scena2D {
+export default class Scena {
   constructor(manager, { autostart = false, usePointerLock = false } = {}) {
     this.manager = manager
     this.predmeti = []

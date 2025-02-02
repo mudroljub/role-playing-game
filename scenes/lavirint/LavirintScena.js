@@ -1,5 +1,4 @@
 import Scena3D from '/core/Scena3D.js'
-import { createToonRenderer } from '/core/scene.js'
 import { createGround } from '/core/ground.js'
 import { sample } from '/core/helpers.js'
 import { hemLight, lightningStrike } from '/core/light.js'
@@ -16,36 +15,30 @@ import FirstAid from '/core/objects/FirstAid.js'
 
 export default class LavirintScena extends Scena3D {
   constructor(manager) {
-    super(manager, { autostart: false, usePointerLock: true })
+    super(manager, { autostart: false, usePointerLock: true, toon: true })
   }
 
   async init() {
-    this.enemies = []
-
-    this.renderer = await createToonRenderer()
-
-    this.light = hemLight({ intensity: Math.PI * 1.5 })
     this.bojaPozadine = 0x070b34
+    this.light = hemLight({ intensity: Math.PI * 1.5, scene: this.scene })
     this.dodajMesh(createGround({ file: 'terrain/ground.jpg' }))
 
-    const maze = this.maze = new Maze(8, 8, truePrims, 5)
-    const coords = maze.getEmptyCoords(true)
-    const walls = maze.toTiledMesh({ texture: 'terrain/concrete.jpg' })
+    this.maze = new Maze(8, 8, truePrims, 5)
+    const walls = this.maze.toTiledMesh({ texture: 'terrain/concrete.jpg' })
     this.dodajMesh(walls)
 
     const player = this.player = new FPSPlayer({ camera: this.camera, solids: walls })
-    player.putInMaze(maze)
-    this.dodajMesh(player.mesh)
+    player.putInMaze(this.maze)
+    this.dodaj(player)
 
-    // this.renderer.render(scene, camera) // first draw
-    this.setupGUI()
-
+    const coords = this.maze.getEmptyCoords(true)
+    this.enemies = []
     const soldiers = [GermanMachineGunnerAI, SSSoldierAI, NaziOfficerAI, GermanFlameThrowerAI]
     for (let i = 0; i < 10; i++) {
       const EnemyClass = sample(soldiers)
       const enemy = new EnemyClass({ pos: coords.pop(), target: player.mesh, solids: walls })
       this.enemies.push(enemy)
-      this.dodajMesh(enemy.mesh)
+      this.dodaj(enemy)
     }
 
     for (let i = 0; i < 2; i++) {
@@ -53,6 +46,8 @@ export default class LavirintScena extends Scena3D {
       this.dodajMesh(firstAid.mesh)
     }
 
+    this.setupGUI()
+    this.renderer.render(this.scene, this.camera) // first draw
   }
 
   setupGUI() {
@@ -74,15 +69,11 @@ export default class LavirintScena extends Scena3D {
     const left = this.enemies.length - killed.length
     const won = this.player.position.distanceTo(this.maze.exitPosition) < 5
 
-    this.player.update(dt)
-
     if (won)
       this.gui.renderText(`Bravo!<br>You found a way out<br> and kill ${killed.length} of ${this.enemies.length} enemies`)
 
     const blinkingMessage = won ? '' : 'Find a way out!'
     this.gui.update({ time: t, points: killed.length, left, dead: this.player.dead, blinkingMessage })
-
-    this.enemies.forEach(enemy => enemy.update(dt))
 
     if (Math.random() > .998) lightningStrike(this.light)
   }

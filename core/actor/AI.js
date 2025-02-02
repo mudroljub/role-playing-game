@@ -18,6 +18,7 @@ export default class AI extends Actor {
     jumpStyle = jumpStyles.ANIM_JUMP,
     attackStyle = attackStyles.LOOP,
     baseState = baseStates.wander,
+    name = 'enemy',
     sightDistance = 25,
     followDistance = 1.5,
     patrolDistance = 10,
@@ -26,6 +27,7 @@ export default class AI extends Actor {
     ...params
   } = {}) {
     super({
+      name,
       speed,
       attackDistance,
       input: new Keyboard({ listen: false }),
@@ -37,7 +39,6 @@ export default class AI extends Actor {
     })
 
     if (target) {
-      this.name = 'enemy'
       this.target = target
       this.addSolids(target)
     }

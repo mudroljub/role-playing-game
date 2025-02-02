@@ -64,7 +64,7 @@ export default class RajlovacScena extends Scena3D {
       this.dodaj(soldier)
     }
 
-    const tank = new TankAI({ mapSize, name: 'enemy' })
+    const tank = new TankAI({ mapSize })
     tank.addSolids(this.solids)
     this.dodaj(tank)
 

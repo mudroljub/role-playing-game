@@ -1,6 +1,6 @@
 import Scena3D from '/core/Scena3D.js'
 import { createGround, createFloor } from '/core/ground.js'
-import { createSun } from '/core/light.js'
+import { createMoon } from '/core/light.js'
 import { sample, getEmptyCoords } from '/core/helpers.js'
 import FPSPlayer from '/core/actor/FPSPlayer.js'
 import GUI, { fpsControls } from '/core/io/GUI.js'
@@ -26,8 +26,6 @@ export default class RajlovacScena extends Scena3D {
     const ground = createGround({ file: 'terrain/ground.jpg' })
     ground.position.y -= .1
     const floor = createFloor({ size: mapSize, file: 'terrain/asphalt.jpg' })
-    const sun = createSun()
-    this.enemies = []
     this.solids = []
 
     const coords = getEmptyCoords({ mapSize: mapSize * .5 })
@@ -42,7 +40,7 @@ export default class RajlovacScena extends Scena3D {
 
     ;[[-75, -75], [-75, 75], [75, -75], [75, 75]].forEach(async([x, z]) => {
       const tower = new Tower({ pos: [x, 0, z], range: 50, interval: 1500, damage: 10, damageDistance: 1, name: 'enemy' })
-      this.enemies.push(tower)
+      this.dodaj(tower)
     })
 
     const airport = createAirport()
@@ -62,16 +60,16 @@ export default class RajlovacScena extends Scena3D {
     for (let i = 0; i < 10; i++) {
       const RandomClass = sample(soldiers)
       const soldier = new RandomClass({ pos: coords.pop(), target: this.player.mesh, mapSize })
-      this.enemies.push(soldier)
       soldier.addSolids(this.solids)
+      this.dodaj(soldier)
     }
 
     const tank = new TankAI({ mapSize, name: 'enemy' })
-    this.enemies.push(tank)
     tank.addSolids(this.solids)
+    this.dodaj(tank)
 
-    this.dodajMesh(ground, floor, sun, airport, airport2, bunker)
-    this.dodaj(...this.aircraft, ...this.enemies, this.player)
+    this.dodajMesh(ground, floor, createMoon(), airport, airport2, bunker)
+    this.dodaj(...this.aircraft, this.player)
   }
 
   setupGUI() {
